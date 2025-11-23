@@ -111,8 +111,6 @@ void tunSelected(int tunfd, SSL *ssl){
     int  len;
     char buff[BUFF_SIZE];
 
-    printf("Got a packet from TUN\n");
-
     bzero(buff, BUFF_SIZE);
     len = read(tunfd, buff, BUFF_SIZE);
     if (len > 0)
@@ -124,8 +122,6 @@ void tunSelected(int tunfd, SSL *ssl){
 void socketSelected (int tunfd, SSL *ssl){
     int  len;
     char buff[BUFF_SIZE];
-
-    printf("Got a packet from the tunnel\n");
 
     bzero(buff, BUFF_SIZE);
     len = SSL_read(ssl, buff, BUFF_SIZE);
