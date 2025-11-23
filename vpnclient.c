@@ -25,9 +25,12 @@ int verify_callback(int preverify_ok, X509_STORE_CTX *x509_ctx)
     X509_NAME_oneline(X509_get_subject_name(cert), buf, 300);
     printf("subject= %s\n", buf);
 
-    if (preverify_ok == 1) {
+    if (preverify_ok == 1) 
+    {
        printf("Verification passed.\n");
-    } else {
+    } 
+    else 
+    {
        int err = X509_STORE_CTX_get_error(x509_ctx);
        printf("Verification failed: %s.\n",
                     X509_verify_cert_error_string(err));
@@ -38,7 +41,8 @@ int verify_callback(int preverify_ok, X509_STORE_CTX *x509_ctx)
 }
 
 
-int createTunDevice() {
+int createTunDevice() 
+{
     int tunfd;
     struct ifreq ifr;
     memset(&ifr, 0, sizeof(ifr));
@@ -46,12 +50,14 @@ int createTunDevice() {
     ifr.ifr_flags = IFF_TUN | IFF_NO_PI;  
 
     tunfd = open("/dev/net/tun", O_RDWR);
-    if (tunfd < 0) {
+    if (tunfd < 0) 
+    {
         perror("Opening /dev/net/tun");
         return -1;
     }
 
-    if (ioctl(tunfd, TUNSETIFF, &ifr) < 0) {
+    if (ioctl(tunfd, TUNSETIFF, &ifr) < 0) 
+    {
         perror("ioctl(TUNSETIFF)");
         close(tunfd);
         return -1;
@@ -60,7 +66,8 @@ int createTunDevice() {
     return tunfd;
 }
 
-int connectToTCPServer(const char* hostname, int port) {
+int connectToTCPServer(const char* hostname, int port) 
+{
     int server_socket;
     struct sockaddr_in serverAddr;
 
@@ -79,7 +86,8 @@ int connectToTCPServer(const char* hostname, int port) {
     serverAddr.sin_port   = htons (port);
     serverAddr.sin_family = AF_INET;
 
-    if (connect(server_socket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) {
+    if (connect(server_socket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) < 0) 
+    {
         perror("connect");
         close(server_socket);
         return -1;
@@ -93,23 +101,24 @@ int connectToTCPServer(const char* hostname, int port) {
 
 SSL* setupTLSClient(const char* hostname)
 {
-    // Step 0: OpenSSL library initialization 
-   // This step is no longer needed as of version 1.1.0.
+
    SSL_library_init();
    SSL_load_error_strings();
    SSLeay_add_ssl_algorithms();
 
    SSL_METHOD *meth;
-   SSL* ssl;
+   SSL *ssl;
 
    SSL_CTX *ctx = SSL_CTX_new(TLS_client_method());
 
 
    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, verify_callback);
-   if(SSL_CTX_load_verify_locations(ctx,NULL, CA_DIR) < 1){
+   if(SSL_CTX_load_verify_locations(ctx,NULL, CA_DIR) < 1)
+   {
 	printf("Error setting the verify locations. \n");
 	exit(0);
    }
+
    ssl = SSL_new (ctx);
 
    X509_VERIFY_PARAM *vpm = SSL_get0_param(ssl); 
@@ -127,7 +136,8 @@ void getPrompt(SSL *ssl)
 
     len = SSL_read(ssl, buff, sizeof(buff) - 1);
 
-    if (len <= 0) {
+    if (len <= 0) 
+    {
         int err = SSL_get_error(ssl, len);
         printf("SSL_read error: %d\n", err);
         return;
@@ -138,7 +148,8 @@ void getPrompt(SSL *ssl)
 }
 
 
-void tunSelected(int tunfd, SSL *ssl){
+void tunSelected(int tunfd, SSL *ssl)
+{
     int  len;
     char buff[BUFF_SIZE];
 
@@ -150,7 +161,8 @@ void tunSelected(int tunfd, SSL *ssl){
     }
 }
 
-void socketSelected (int tunfd, SSL *ssl){
+void socketSelected (int tunfd, SSL *ssl)
+{
     int  len;
     char buff[BUFF_SIZE];
 
@@ -164,18 +176,16 @@ void socketSelected (int tunfd, SSL *ssl){
    
     write(tunfd, buff, len);
     
-
 }
 
-int main (int argc, char * argv[]) {
+int main (int argc, char * argv[]) 
+{
    int tunfd, sockfd;
 
    int authenticated;
 
    char *hostname;
    int port;
-   char *encryptedPassword;
-
    
    if (argc > 1) hostname = argv[1];
    if (argc > 2) port = atoi(argv[2]);
@@ -206,7 +216,8 @@ int main (int argc, char * argv[]) {
        SSL_read(ssl, &authenticated, sizeof(authenticated));
        authenticated = ntohl(authenticated);
     
-        if (!authenticated) {
+        if (!authenticated) 
+        {
             SSL_shutdown(ssl);
             SSL_free(ssl);
             close(sockfd);
@@ -214,6 +225,9 @@ int main (int argc, char * argv[]) {
         }
     
        tunfd  = createTunDevice();
+
+       printf("Tun Device Created\n");
+
 
         while(1)
         {

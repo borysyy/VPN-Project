@@ -30,12 +30,14 @@ int createTunDevice() {
     ifr.ifr_flags = IFF_TUN | IFF_NO_PI;  
 
     tunfd = open("/dev/net/tun", O_RDWR);
-    if (tunfd < 0) {
+    if (tunfd < 0) 
+    {
         perror("Opening /dev/net/tun");
         return -1;
     }
 
-    if (ioctl(tunfd, TUNSETIFF, &ifr) < 0) {
+    if (ioctl(tunfd, TUNSETIFF, &ifr) < 0) 
+    {
         perror("ioctl(TUNSETIFF)");
         close(tunfd);
         return -1;
@@ -86,8 +88,7 @@ int initTCPServer() {
 
 SSL* setupTLSServer()
 {
-    // Step 0: OpenSSL library initialization 
-   // This step is no longer needed as of version 1.1.0.
+
    SSL_library_init();
    SSL_load_error_strings();
    SSLeay_add_ssl_algorithms();
@@ -148,9 +149,12 @@ void sendAuthResult(SSL *ssl, int success)
 
     success = htonl(success);
     
-    if (success) {
+    if (success) 
+    {
         SSL_write(ssl, successMsg, strlen(successMsg));
-    } else {
+    } 
+    else 
+    {
         SSL_write(ssl, failureMsg, strlen(failureMsg));
     }
 
@@ -161,13 +165,14 @@ void sendAuthResult(SSL *ssl, int success)
 void getUserResponse(SSL *ssl, char *buffer, int size)
 {
     int len = SSL_read(ssl, buffer, size - 1);
-    if (len <= 0) {
+    if (len <= 0) 
+    {
         int err = SSL_get_error(ssl, len);
         printf("SSL_read error: %d\n", err);
         buffer[0] = '\0';
         return;
     }
-    buffer[len] = '\0'; // Null-terminate the string
+    buffer[len] = '\0'; 
 }
 
 
@@ -181,21 +186,26 @@ int login(char *user, char *passwd)
     passwd[strcspn(passwd, "\n")] = 0; 
 
     shadowPasswordEntry = getspnam(user);
-    if (shadowPasswordEntry == NULL) {
+    if (shadowPasswordEntry == NULL) 
+    {
         printf("User not found: %s\n", user);
         return 0; // User not found
     }
 
     char *encryptedPassword = crypt(passwd, shadowPasswordEntry->sp_pwdp);
 
-    if (strcmp(encryptedPassword, shadowPasswordEntry->sp_pwdp) == 0) {
+    if (strcmp(encryptedPassword, shadowPasswordEntry->sp_pwdp) == 0) 
+    {
         return 1; // Authentication successful
-    } else {
+    } 
+    else
+    {
         return 0; // Authentication failed
     }
 }
 
-int main (int argc, char * argv[]) {
+int main (int argc, char * argv[]) 
+{
     int tunfd, listenfd, clientfd;
     char username[256];
     char password[256];
@@ -246,8 +256,9 @@ int main (int argc, char * argv[]) {
             continue; 
         }
 
-        
         tunfd  = createTunDevice();
+
+        printf("Tun Device Created\n");
  
             
         while(1)
