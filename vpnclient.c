@@ -216,7 +216,6 @@ int main (int argc, char * argv[])
 
        char hashed_password[256];
        int n = SSL_read(ssl, hashed_password, sizeof(hashed_password));
-       printf("%d\n", n);
        hashed_password[n] = '\0';
 
        // Get Password
