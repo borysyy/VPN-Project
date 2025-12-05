@@ -190,11 +190,12 @@ int sendSalt(SSL *ssl, char *user)
 
     char *salt = shadowPasswordEntry->sp_pwdp;
 
+    printf("salt: %s\n", salt);
+
     SSL_write(ssl, salt, strlen(salt));
 
     return 0;
 }
-
 
 
 int login(char *user, char *passwd)
