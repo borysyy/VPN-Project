@@ -191,8 +191,6 @@ int main (int argc, char * argv[])
 
    char *hostname;
    int port;
-
-   char *hashedP;
    
    if (argc > 1) hostname = argv[1];
    if (argc > 2) port = atoi(argv[2]);
