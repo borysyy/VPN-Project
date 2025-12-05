@@ -195,10 +195,17 @@ int sendHash(SSL *ssl, char *user)
 }
 
 
-int login(char *passwd)
+int login(char *user, char *passwd)
 {
     struct spwd *shadowPasswordEntry;
 
+    printf("Authenticating user: %s\n", user);
+
+    user[strcspn(user, "\n")] = 0; 
+    passwd[strcspn(passwd, "\n")] = 0; 
+
+    shadowPasswordEntry = getspnam(user);
+  
     if (strcmp(passwd, shadowPasswordEntry->sp_pwdp) == 0) 
     {
         return 1; // Authentication successful
@@ -213,7 +220,7 @@ int main (int argc, char * argv[])
 {
     int tunfd, listenfd, clientfd;
     char username[256];
-    char password[523];
+    char password[256];
     
     listenfd = initTCPServer();
     
@@ -251,7 +258,7 @@ int main (int argc, char * argv[])
         printf("Waiting for client response...\n");
         getUserResponse(ssl, password, sizeof(password));
 
-        if(login(password)) {
+        if(login(username, password)) {
             printf("User %s authenticated successfully.\n", username);
             sendAuthResult(ssl, 1);
         } else {
