@@ -218,14 +218,11 @@ int main (int argc, char * argv[])
 
        char hashed_password[523];
        int n = SSL_read(ssl, hashed_password, sizeof(hashed_password) - 1);
-
        hashed_password[n] = '\0';
 
        // Get Password
        char *password = getpass("Password: ");
-
        char *encryptedPassword = crypt(password, hashed_password);
-
        SSL_write(ssl, encryptedPassword, strlen(encryptedPassword));
 
        // Get Authentication Result
