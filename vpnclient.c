@@ -10,6 +10,8 @@
 #include <openssl/err.h>
 #include <netdb.h>
 #include <openssl/sha.h>
+#include <crypt.h>
+
 
 
 
