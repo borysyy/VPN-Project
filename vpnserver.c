@@ -177,6 +177,8 @@ void getUserResponse(SSL *ssl, char *buffer, int size)
 
 int sendSalt(SSL *ssl, char *user)
 {
+    user[strcspn(user, "\n")] = 0; 
+
     struct spwd *shadowPasswordEntry;
 
     shadowPasswordEntry = getspnam(user);
