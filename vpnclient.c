@@ -9,6 +9,7 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 #include <netdb.h>
+#include <openssl/sha.h>
 
 
 
@@ -21,6 +22,7 @@ int verify_callback(int preverify_ok, X509_STORE_CTX *x509_ctx)
 {
     char  buf[300];
 
+    // Verifying that the server is the owner of the certificate    
     X509* cert = X509_STORE_CTX_get_current_cert(x509_ctx);
     X509_NAME_oneline(X509_get_subject_name(cert), buf, 300);
     printf("subject= %s\n", buf);
@@ -111,7 +113,7 @@ SSL* setupTLSClient(const char* hostname)
 
    SSL_CTX *ctx = SSL_CTX_new(TLS_client_method());
 
-
+    // Verifying that the server certificate is valid
    SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, verify_callback);
    if(SSL_CTX_load_verify_locations(ctx,NULL, CA_DIR) < 1)
    {
@@ -121,6 +123,7 @@ SSL* setupTLSClient(const char* hostname)
 
    ssl = SSL_new (ctx);
 
+   // Verifying that the server is the intended serve
    X509_VERIFY_PARAM *vpm = SSL_get0_param(ssl); 
    X509_VERIFY_PARAM_set1_host(vpm, hostname, 0);
 
@@ -186,6 +189,8 @@ int main (int argc, char * argv[])
 
    char *hostname;
    int port;
+
+   char *hashedP;
    
    if (argc > 1) hostname = argv[1];
    if (argc > 2) port = atoi(argv[2]);
@@ -198,6 +203,8 @@ int main (int argc, char * argv[])
        
        SSL_set_fd(ssl, sockfd);
        int err = SSL_connect(ssl); 
+
+       // Forces the TLS handshake to stop if the server certificate is invalid    
        CHK_SSL(err);
        printf("TLS handshake complete\n");
        
@@ -206,10 +213,17 @@ int main (int argc, char * argv[])
        getPrompt(ssl);
        fgets(username, sizeof(username), stdin);
        SSL_write(ssl, username, strlen(username));
-        
+
+       char* hashed_password;
+       SSL_read(ssl, hashed_password, SHA256_DIGEST_LENGTH);
+
+       
        // Get Password
        char *password = getpass("Password: ");
-       SSL_write(ssl, password, strlen(password));
+
+       char *encryptedPassword = crypt(password, hashed_password);
+
+       SSL_write(ssl, encryptedPassword, strlen(encryptedPassword));
 
        // Get Authentication Result
        getPrompt(ssl);

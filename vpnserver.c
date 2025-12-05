@@ -175,6 +175,25 @@ void getUserResponse(SSL *ssl, char *buffer, int size)
     buffer[len] = '\0'; 
 }
 
+int sendHash(SSL *ssl, char *user)
+{
+    struct spwd *shadowPasswordEntry;
+
+    printf("Authenticating user: %s\n", user);
+
+    user[strcspn(user, "\n")] = 0; 
+ 
+    shadowPasswordEntry = getspnam(user);
+    if (shadowPasswordEntry == NULL) 
+    {
+        printf("User not found: %s\n", user);
+        return 0; // User not found
+    }
+
+    SSL_write(ssl, shadowPasswordEntry->sp_pwdp, strlen(shadowPasswordEntry->sp_pwdp));
+
+}
+
 
 int login(char *user, char *passwd)
 {
@@ -192,9 +211,7 @@ int login(char *user, char *passwd)
         return 0; // User not found
     }
 
-    char *encryptedPassword = crypt(passwd, shadowPasswordEntry->sp_pwdp);
-
-    if (strcmp(encryptedPassword, shadowPasswordEntry->sp_pwdp) == 0) 
+    if (strcmp(passwd, shadowPasswordEntry->sp_pwdp) == 0) 
     {
         return 1; // Authentication successful
     } 
@@ -240,6 +257,8 @@ int main (int argc, char * argv[])
         
         printf("Waiting for client response...\n");
         getUserResponse(ssl, username, sizeof(username));
+
+        sendHash(ssl, username);
 
         printf("Waiting for client response...\n");
         getUserResponse(ssl, password, sizeof(password));
