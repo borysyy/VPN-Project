@@ -205,12 +205,6 @@ int login(char *user, char *passwd)
     passwd[strcspn(passwd, "\n")] = 0; 
 
     shadowPasswordEntry = getspnam(user);
-    if (shadowPasswordEntry == NULL) 
-    {
-        printf("User not found: %s\n", user);
-        return 0; // User not found
-    }
-
 
     if (strcmp(passwd, shadowPasswordEntry->sp_pwdp) == 0) 
     {
