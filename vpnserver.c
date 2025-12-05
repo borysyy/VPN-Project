@@ -202,7 +202,6 @@ int login(char *user, char *passwd)
     printf("Authenticating user: %s\n", user);
 
     user[strcspn(user, "\n")] = 0; 
-    passwd[strcspn(passwd, "\n")] = 0; 
 
     shadowPasswordEntry = getspnam(user);
 
