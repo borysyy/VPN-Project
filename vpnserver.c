@@ -215,7 +215,7 @@ int main (int argc, char * argv[])
 {
     int tunfd, listenfd, clientfd;
     char username[256];
-    char password[256];
+    char password[523];
     
     listenfd = initTCPServer();
     
