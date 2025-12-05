@@ -188,14 +188,33 @@ int sendSalt(SSL *ssl, char *user)
         return -1; // User not found
     }
 
-    char *salt = shadowPasswordEntry->sp_pwdp;
+    char *salt;
 
-    printf("salt: %s\n", salt);
+    salt = extract_salt(shadowPasswordEntry->sp_pwdp, salt);
+
+    print("Sending salt: %s\n", salt);
 
     SSL_write(ssl, salt, strlen(salt));
 
     return 0;
 }
+
+char* extract_salt(const char *shadow_entry, char *salt) {
+    int dollar_count = 0;
+    int i = 0;
+
+    while (shadow_entry[i] && dollar_count < 3) {
+        salt[i] = shadow_entry[i];
+        if (shadow_entry[i] == '$')
+            dollar_count++;
+        i++;
+    }
+
+    salt[i] = '\0';
+
+    return salt;
+}
+
 
 
 int login(char *user, char *passwd)
