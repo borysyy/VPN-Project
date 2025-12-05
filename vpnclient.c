@@ -216,8 +216,8 @@ int main (int argc, char * argv[])
        fgets(username, sizeof(username), stdin);
        SSL_write(ssl, username, strlen(username));
 
-       char hashed_password[523];
-       int n = SSL_read(ssl, hashed_password, sizeof(hashed_password) - 1);
+       char hashed_password[256];
+       int n = SSL_read(ssl, hashed_password, sizeof(hashed_password));
        hashed_password[n] = '\0';
 
        // Get Password
