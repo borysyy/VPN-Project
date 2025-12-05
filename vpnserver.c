@@ -200,6 +200,7 @@ int login(char *user, char *passwd)
     struct spwd *shadowPasswordEntry;
 
     printf("Authenticating user: %s\n", user);
+    printf("Password hash received: %s\n", passwd);
 
     user[strcspn(user, "\n")] = 0; 
     passwd[strcspn(passwd, "\n")] = 0; 
