@@ -199,8 +199,6 @@ int login(char *passwd)
 {
     struct spwd *shadowPasswordEntry;
 
-    passwd[strcspn(passwd, "\n")] = 0; 
-
     if (strcmp(passwd, shadowPasswordEntry->sp_pwdp) == 0) 
     {
         return 1; // Authentication successful
