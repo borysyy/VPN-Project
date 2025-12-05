@@ -10,8 +10,6 @@
 #include <openssl/err.h>
 #include <netdb.h>
 #include <openssl/sha.h>
-#include <crypt.h>
-
 
 
 
@@ -213,15 +211,10 @@ int main (int argc, char * argv[])
        getPrompt(ssl);
        fgets(username, sizeof(username), stdin);
        SSL_write(ssl, username, strlen(username));
-
-       char hashed_password[256];
-       int n = SSL_read(ssl, hashed_password, sizeof(hashed_password));
-       hashed_password[n] = '\0';
-
+        
        // Get Password
        char *password = getpass("Password: ");
-       char *encryptedPassword = crypt(password, hashed_password);
-       SSL_write(ssl, encryptedPassword, strlen(encryptedPassword));
+       SSL_write(ssl, password, strlen(password));
 
        // Get Authentication Result
        getPrompt(ssl);
