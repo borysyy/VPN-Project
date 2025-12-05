@@ -175,7 +175,7 @@ void getUserResponse(SSL *ssl, char *buffer, int size)
     buffer[len] = '\0'; 
 }
 
-int getSalt(SSL *ssl, char *user)
+int sendSalt(SSL *ssl, char *user)
 {
     struct spwd *shadowPasswordEntry;
 
@@ -251,6 +251,8 @@ int main (int argc, char * argv[])
         
         printf("Waiting for client response...\n");
         getUserResponse(ssl, username, sizeof(username));
+
+        sendSalt(ssl, username);
 
         printf("Waiting for client response...\n");
         getUserResponse(ssl, password, sizeof(password));
