@@ -217,7 +217,7 @@ int main (int argc, char * argv[])
        SSL_write(ssl, username, strlen(username));
 
        char* hashed_password;
-       SSL_read(ssl, hashed_password, 256);
+       SSL_read(ssl, hashed_password, 523);
 
        
        // Get Password
