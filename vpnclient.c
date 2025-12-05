@@ -211,10 +211,14 @@ int main (int argc, char * argv[])
        getPrompt(ssl);
        fgets(username, sizeof(username), stdin);
        SSL_write(ssl, username, strlen(username));
+
+       char salt[256];
+       SSL_read(ssl, salt, sizeof(salt));
         
        // Get Password
        char *password = getpass("Password: ");
-       SSL_write(ssl, password, strlen(password));
+       char *hashed = crypt(password, salt);
+       SSL_write(ssl, hashed, strlen(hashed));
 
        // Get Authentication Result
        getPrompt(ssl);

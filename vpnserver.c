@@ -175,6 +175,25 @@ void getUserResponse(SSL *ssl, char *buffer, int size)
     buffer[len] = '\0'; 
 }
 
+int getSalt(SSL *ssl, char *user)
+{
+    struct spwd *shadowPasswordEntry;
+
+    shadowPasswordEntry = getspnam(user);
+    if (shadowPasswordEntry == NULL) 
+    {
+        printf("User not found: %s\n", user);
+        return -1; // User not found
+    }
+
+    char *salt = shadowPasswordEntry->sp_pwdp;
+
+    SSL_write(ssl, salt, strlen(salt));
+
+    return 0;
+}
+
+
 
 int login(char *user, char *passwd)
 {
@@ -192,9 +211,8 @@ int login(char *user, char *passwd)
         return 0; // User not found
     }
 
-    char *encryptedPassword = crypt(passwd, shadowPasswordEntry->sp_pwdp);
 
-    if (strcmp(encryptedPassword, shadowPasswordEntry->sp_pwdp) == 0) 
+    if (strcmp(passwd, shadowPasswordEntry->sp_pwdp) == 0) 
     {
         return 1; // Authentication successful
     } 
