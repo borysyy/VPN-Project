@@ -199,7 +199,7 @@ int sendSalt(SSL *ssl, char *user)
     return 0;
 }
 
-char* extract_salt(const char *shadow_entry, char *salt) {
+char *extract_salt(const char *shadow_entry, char *salt) {
     int dollar_count = 0;
     int i = 0;
 
